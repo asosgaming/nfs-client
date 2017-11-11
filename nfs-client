@@ -1,47 +1,12 @@
 #!/bin/bash
 
-is_process_running() {
-  if [[ -n $(pgrep $1) ]];
-  then
-    return 0
-  else
-    return 1
-  fi
-}
-
-while :
-do
-
-  if ! is_process_running 'rpcbind'; then
-    /sbin/rpcbind -i
-  fi
-
-  if ! is_process_running 'rpc.statd'; then
-    /usr/sbin/rpc.statd --no-notify --port 32765 --outgoing-port 32766
-    sleep .5
-  fi
-
-  if [[ ! -a /proc/fs/nfsd/threads ]]; then
-    echo $(pgrep 'nfsd')
-    /usr/sbin/rpc.nfsd -V3 -N2 -N4 -d 8
-  fi
-
-  if ! is_process_running 'rpc.mountd'; then
-    /usr/sbin/rpc.mountd -V3 -N2 -N4 --port 32767
-    /usr/sbin/exportfs -ra
-  fi
-
-  sleep 5
-
-done
+rpc.statd & rpcbind -f
 
 NFS_DIRS=$(compgen -A variable|grep MOUNT_)
 
 for dir in $NFS_DIRS
 do
   index=${dir##*_}
-
-
 
   if [ ${!dir} == $COMMON* ]
   then
