@@ -1,0 +1,26 @@
+#!/bin/bash
+
+NFS_DIRS=$(compgen -A variable|grep MOUNT_)
+
+for dir in $NFS_DIRS
+do
+  index=${dir##*_}
+
+
+
+  if [ ${!dir} == $COMMON* ]
+  then
+    source=${!dir}
+    target=${TARGET}${!dir#$COMMON}
+  else
+    source=${COMMON}${!dir}
+    target=${TARGET}${!dir}
+  fi
+
+  mkdir -p $target
+
+  if [[ -n ${!dir} ]] && [[ -n ${source} ]] && [[ -n ${target} ]] ; then
+    mount -t nfs -o ${OPTIONS} ${SERVER}:${source} ${target}
+  fi
+
+done
