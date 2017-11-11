@@ -12,7 +12,7 @@ RUN apk --update upgrade && \
   apk add bash nfs-utils && \
   rm -rf /var/cache/apk/*
 
-COPY ["/nfs-client","/usr/local/sbin"]
-RUN ["chmod","755","/usr/local/sbin/nfs-client"]
+COPY ["/nfs-client","/"]
+RUN ["chmod","755","/nfs-client"]
 
-ENTRYPOINT ["/usr/local/sbin/nfs-client"]
+ENTRYPOINT ["/nfs-client"]
