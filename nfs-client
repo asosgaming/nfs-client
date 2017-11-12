@@ -8,6 +8,8 @@ for mount in $NFS_MOUNTS
 do
   index=${mount##*_}
 
+  if [[ $mount == *"_SERVER" ]] || [[ $mount == *"_OPTIONS" ]] || [[ $mount == *"_TARGET" ]]; then continue; fi
+
   server="${mount}_SERVER"
   if [ "${!server}" == "" ]; then server="SERVER"; fi
 
@@ -15,7 +17,8 @@ do
   if [ "${!options}" == "" ]; then options="OPTIONS"; fi
 
   target="${mount}_TARGET"
-  if [ "${!target}" == "" ]; then
+  target="${!target}"
+  if [ "${target}" == "" ]; then
     if [ "${!mount}" == "$COMMON"* ]
     then
       source=${!mount}
