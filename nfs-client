@@ -1,26 +1,33 @@
 #!/bin/bash
 
-rpc.statd & rpcbind -f
+NFS_MOUNTS=$(compgen -A variable|grep MOUNT_)
 
-NFS_DIRS=$(compgen -A variable|grep MOUNT_)
+rpcbind --
 
-for dir in $NFS_DIRS
+for mount in $NFS_MOUNTS
 do
-  index=${dir##*_}
+  index=${mount##*_}
 
-  if [ ${!dir} == $COMMON* ]
+  server="${mount}_SERVER"
+  if [ "${!server}" == "" ]; then server="SERVER"; fi
+
+  options="${mount}_OPTIONS"
+  if [ "${!options}" == "" ]; then options="OPTIONS"; fi
+
+  if [ ${!mount} == $COMMON* ]
   then
-    source=${!dir}
-    target=${TARGET}${!dir#$COMMON}
+    source=${!mount}
+    target=${TARGET}${!mount#$COMMON}
   else
-    source=${COMMON}${!dir}
-    target=${TARGET}${!dir}
+    source=${COMMON}${!mount}
+    target=${TARGET}${!mount}
   fi
 
-  mkdir -p $target
-
-  if [[ -n ${!dir} ]] && [[ -n ${source} ]] && [[ -n ${target} ]] ; then
-    mount -t nfs -o ${OPTIONS} ${SERVER}:${source} ${target}
+  if [[ -n ${!mount} ]] ; then
+    mkdir -p $target &&
+    mount -t nfs -o ${!options} ${!server}:${source} ${target} &&
+    echo "Mounted ${!server}:${source} to ${target} (${!options})"
   fi
-
 done
+
+while true; do sleep 1000; done
