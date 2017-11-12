@@ -34,8 +34,8 @@ do
   fi
 
   if [[ -n ${!mount} ]] ; then
-    if [ -d $target ]; then
-      echo "$(date '+%m-%d-%Y %H:%M:%S') mount: mounting ${!server}:${source} on ${target} failed: Target already exists"
+    if [ -d $target ] && [ -n "$(ls -A $target)" ]; then
+      echo "$(date '+%m-%d-%Y %H:%M:%S') mount: mounting ${!server}:${source} on ${target} failed: Target already exists and is not empty"
     else
       check=$(mount | grep " on ${target} type " | awk '{print $1;}')
       if [ "$check" != "" ]; then
