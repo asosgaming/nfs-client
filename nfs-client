@@ -14,19 +14,44 @@ do
   options="${mount}_OPTIONS"
   if [ "${!options}" == "" ]; then options="OPTIONS"; fi
 
-  if [ ${!mount} == $COMMON* ]
-  then
+  target="${mount}_TARGET"
+  if [ "${!target}" == "" ]; then
+    if [ "${!mount}" == "$COMMON"* ]
+    then
+      source=${!mount}
+      target=${TARGET}${!mount#$COMMON}
+    else
+      source=${COMMON}${!mount}
+      target=${TARGET}${!mount}
+    fi
+  elif [ "${!mount}" == "$COMMON"* ]; then
     source=${!mount}
-    target=${TARGET}${!mount#$COMMON}
   else
     source=${COMMON}${!mount}
-    target=${TARGET}${!mount}
   fi
 
   if [[ -n ${!mount} ]] ; then
-    mkdir -p $target &&
-    mount -t nfs -o ${!options} ${!server}:${source} ${target} &&
-    echo "Mounted ${!server}:${source} to ${target} (${!options})"
+    if [ -d $target ]; then
+      echo "$(date '+%m-%d-%Y %H:%M:%S') mount: mounting ${!server}:${source} on ${target} failed: Target already exists"
+    else
+      check=$(mount | grep " on ${target} type " | awk '{print $1;}')
+      if [ "$check" != "" ]; then
+        echo "$(date '+%m-%d-%Y %H:%M:%S') mount: mounting ${!server}:${source} on ${target} failed: Already mounted to $check"
+      else
+        mkdir -p $target &&
+        echo "${!server}:${source} ${target} nfs ${!options} 0 0" >> /etc/fstab &&
+        while read -r line; do
+          if [[ $line == "mount"* ]]; then
+            echo "$(date '+%m-%d-%Y %H:%M:%S') $line"
+          fi
+        done < <(mount ${target} 2>&1)
+
+        check=$(mount | grep "${!server}:${source} on ${target}" | awk '{print $NF}')
+        if [ "$check" != "" ]; then
+          echo "$(date '+%m-%d-%Y %H:%M:%S') mount: mounting ${!server}:${source} on ${target} success: $check"
+        fi
+      fi
+    fi
   fi
 done
 
