@@ -58,4 +58,6 @@ do
   fi
 done
 
-while true; do sleep 1000; done
+lighttpd -D -f /etc/lighttpd/lighttpd.conf
+
+#while true; do sleep 1000; done
