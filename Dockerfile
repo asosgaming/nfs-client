@@ -16,5 +16,7 @@ RUN rm /sbin/halt /sbin/poweroff /sbin/reboot
 COPY ["/nfs-client","/"]
 RUN ["chmod","755","/nfs-client"]
 
+EXPOSE 614
+
 VOLUME /nfs
 ENTRYPOINT ["/nfs-client"]
