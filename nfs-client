@@ -2,7 +2,7 @@
 
 NFS_MOUNTS=$(compgen -A variable|grep MOUNT_)
 
-rpcbind --
+rpc.statd & rpcbind --
 
 for mount in $NFS_MOUNTS
 do
