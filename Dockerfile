@@ -9,11 +9,10 @@ ENV SERVER=nas \
 
 # Install bash & nfs-utils
 RUN apk --update upgrade && \
-  apk add bash nfs-utils lighttpd && \
+  apk add bash nfs-utils && \
   rm -rf /var/cache/apk/* && \
   echo " " > /var/www/localhost/htdocs/index.html
 
-EXPOSE 80
 VOLUME ["/nfs"]
 
 COPY ["/nfs-client","/"]
