@@ -10,8 +10,7 @@ ENV SERVER=nas \
 # Install bash & nfs-utils
 RUN apk --update upgrade && \
   apk add bash nfs-utils && \
-  rm -rf /var/cache/apk/* && \
-  echo " " > /var/www/localhost/htdocs/index.html
+  rm -rf /var/cache/apk/*
 
 VOLUME ["/nfs"]
 
