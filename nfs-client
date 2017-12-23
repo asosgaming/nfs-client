@@ -2,7 +2,8 @@
 
 NFS_MOUNTS=$(compgen -A variable|grep MOUNT_)
 
-rpc.statd & rpcbind --
+rpc.statd
+rpcbind --
 
 success=true
 
@@ -46,7 +47,7 @@ do
       continue
     fi
 
-    mkdir -p "$target" &&
+    mkdir -p "$target"
     while read -r line; do
       if [[ $line == "mount"* ]]; then
         echo "$line"
@@ -58,6 +59,7 @@ do
     if [ "$check" != "" ]; then
       echo "mount: mounting ${!server}:${source} on ${target} success: $check"
     else
+      echo "mount: mounting ${!server}:${source} on ${target} failed"
       success=false
     fi
   fi
@@ -69,3 +71,4 @@ if [ $success == true ]; then
 else
   echo "mount: Failed mounting of folders"
 fi
+
